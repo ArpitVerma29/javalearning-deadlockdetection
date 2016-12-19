@@ -1,0 +1,15 @@
+Steps to take Thread Dump
+1. Find the PID of running java process (javaw.exe) using Windows Task Manager.
+2. Execute the command
+	C:\Program Files\Java\jdk1.8.0_74\bin>jstack 57232 
+	
+1. Here I am creating two runnable blocks block1 and block2.
+2. These two blocks are accessing two objects A and B but in different order. 
+3. When the program is executed the Thread-0 takes lock on the object A with address 0x000000076dbeb8b8 and goes to wait state after encountering Thread.sleep(1000).
+4. Thread-1 takes lock on object B with the address 0x000000076dbecd48.
+5. Now Thread-0 will try to acquire lock on object B but will wait as Thread-1 has already lock on object B.
+	- waiting to lock <0x000000076dbecd48> (a garbageCollector.DeadLockTest$B)
+	- locked <0x000000076dbeb8b8> (a garbageCollector.DeadLockTest$A)
+6. Thread-1 will also try to acquire lock on object A but it has been locked by Thread-0.
+	- waiting to lock <0x000000076dbeb8b8> (a garbageCollector.DeadLockTest$A)
+	- locked <0x000000076dbecd48> (a garbageCollector.DeadLockTest$B)
